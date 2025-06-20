@@ -50,6 +50,10 @@ public function get_payment_report()
     return $this->db->query($sql)->getResultArray(); // ✅ works without .table()
 }
 
+public function fetch_expense_types()
+{
+    return $this->db->query("SELECT * FROM expense_type ORDER BY expense_id DESC")->getResultArray();
+}
 
 
     public function update_lib_user($data)
@@ -389,6 +393,10 @@ public function get_penalty_per_day()
         return $this->db->table($table)->update($data, $where);
     }
 
+public function deleteData($table, $where)
+{
+    return $this->db->table($table)->delete($where);
+}
 
     public function getLibraryPolicy()
 {

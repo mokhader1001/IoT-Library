@@ -15,6 +15,11 @@ class Home extends BaseController
         return view('lib_staf');
     }
 
+    public function exp_tpes(): string
+    {
+        return view('expense/expense_types');
+    }
+
 public function payment_report()
 {
     $model = new \App\Models\HomeModel();
@@ -1538,6 +1543,70 @@ public function returnbooks()
 
 
 
+public function fetch_expense_types()
+{
+    $model = new \App\Models\HomeModel();
+    $data = $model->fetch_expense_types();
+
+    $result = ['data' => []];
+    $i = 1;
+
+    foreach ($data as $row) {
+       
+
+        $actions = '
+            <button class="btn btn-sm btn-info btn-edit-expense" 
+                data-id="' . $row['expense_id'] . '" 
+                data-name="' . $row['name'] . '">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-danger btn-delete-expense" 
+                data-id="' . $row['expense_id'] . '" 
+                data-name="' . $row['name'] . '">
+                <i class="fas fa-trash"></i>
+            </button>';
+
+        $result['data'][] = [$i++, esc($row['name']), $actions];
+    }
+
+    return $this->response->setJSON($result);
+}
+
+public function save_expense_type()
+{
+    $request = $this->request->getPost();
+
+    $action = $request['action_type'] ?? null;
+
+    if (!$action) {
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Missing action_type in request'
+        ]);
+    }
+
+    $model = new \App\Models\HomeModel();
+
+    if ($action === 'delete') {
+        $id = $request['expense_id'];
+        $model->deleteData('expense_type', ['expense_id' => $id]);
+        return $this->response->setJSON(['success' => true, 'message' => 'Deleted successfully']);
+    }
+
+    $data = [
+        'name' => $request['name']
+    ];
+
+    if (!empty($request['expense_id'])) {
+        $model->updateData('expense_type', ['expense_id' => $request['expense_id']], $data);
+        $message = 'Updated successfully';
+    } else {
+        $model->store('expense_type', $data);
+        $message = 'Inserted successfully';
+    }
+
+    return $this->response->setJSON(['success' => true, 'message' => $message]);
+}
 
 
 
