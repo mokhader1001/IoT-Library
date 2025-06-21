@@ -11,6 +11,12 @@ class HomeModel extends Model
     {
         return $this->db->table($table)->insert($data);
     }
+    public function store_id($table, $data)
+{
+    $this->db->table($table)->insert($data);
+    return $this->db->insertID();
+}
+
     public function __construct()
     {
         parent::__construct(); // ✅ Always call parent constructor first
@@ -49,6 +55,80 @@ public function get_payment_report()
 
     return $this->db->query($sql)->getResultArray(); // ✅ works without .table()
 }
+
+
+
+public function getAllTransactions()
+{
+    // Step 1: Get all distinct transaction headers (grouped by transaction_id)
+    $builder = $this->db->table('transactions');
+    $builder->select('transaction_id, source, descriptions, transaction_date');
+    $builder->groupBy('transaction_id');
+    $headers = $builder->get()->getResultArray();
+
+    $final = [];
+
+    foreach ($headers as $header) {
+        $transaction_id = $header['transaction_id'];
+
+        // Step 2: Get all entries for this transaction_id (debit and credit rows)
+        $entriesBuilder = $this->db->table('transactions t');
+        $entriesBuilder->select('a.account_name, t.debit, t.credit');
+        $entriesBuilder->join('accounts a', 'a.account_id = t.account_id');
+        $entriesBuilder->where('t.transaction_id', $transaction_id);
+        $entries = $entriesBuilder->get()->getResultArray();
+
+        // Step 3: Sum total debit (used in parent table only)
+        $total_debit = 0;
+        foreach ($entries as $e) {
+            $total_debit += (float)$e['debit'];
+        }
+
+        // Step 4: Prepare final structure
+        $final[] = [
+            'transaction_id' => $transaction_id,
+            'source'         => $header['source'],
+            'description'    => $header['descriptions'],
+            'transaction_date' => $header['transaction_date'],
+            'total_debit'    => $total_debit,
+            'entries'        => $entries
+        ];
+    }
+
+    return $final;
+}
+
+
+public function getGroupedTransactions()
+{
+    $builder = $this->db->table('transactions t');
+    $builder->join('accounts a', 'a.account_id = t.account_id');
+    $builder->select('t.transaction_id, a.account_name, t.debit, t.credit, t.transaction_date, t.descriptions, t.source');
+    $builder->orderBy('t.transaction_id', 'DESC');
+
+    $results = $builder->get()->getResultArray();
+
+    // Group by transaction_id
+    $grouped = [];
+    foreach ($results as $row) {
+        $tid = $row['transaction_id'];
+        $grouped[$tid]['meta'] = [
+            'source' => $row['source'],
+            'description' => $row['descriptions'],
+            'date' => $row['transaction_date']
+        ];
+        $grouped[$tid]['entries'][] = [
+            'account_name' => $row['account_name'],
+            'debit' => $row['debit'],
+            'credit' => $row['credit']
+        ];
+    }
+
+    return $grouped;
+}
+
+
+
 
 public function fetch_expense_types()
 {
@@ -407,6 +487,42 @@ public function deleteData($table, $where)
 
     return $this->db->query($sql)->getRow();
 }
+
+public function getAccounts()
+{
+    return $this->db->table('accounts')
+                    ->select('account_id, account_name')
+                    ->get()
+                    ->getResult();
+}
+public function getExpenseTypesDropdown()
+{
+    $sql = "SELECT expense_id, name FROM expense_type";
+    $query = $this->db->query($sql);
+    return $query->getResultArray(); // Returns as array of ['expense_id' => ..., 'name' => ...]
+}
+
+public function getExpensePayments()
+{
+    $sql = "SELECT 
+                ep.exppayment_id,
+                ep.expense_id,
+                ep.price,
+                ep.account_id,
+                ep.descriptions,
+                et.name AS expense_name,
+                a.account_name,
+                ep.payment_date
+            FROM 
+                expense_payments ep
+            JOIN 
+                expense_type et ON et.expense_id = ep.expense_id
+            JOIN 
+                accounts a ON a.account_id = ep.account_id";
+
+    return $this->db->query($sql)->getResultArray();
+}
+
 
 public function get_unreturned_book($user_id, $book_id)
 {

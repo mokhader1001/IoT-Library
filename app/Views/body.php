@@ -1,7 +1,8 @@
 <?= $this->extend("index"); ?>
 <?= $this->section('content'); ?>
 
-<!-- Dashboard Content -->
+<br><br> <br><br>
+
 <div class="dashboard-container">
     <!-- Animated Background -->
     <div class="area">

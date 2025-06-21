@@ -54,8 +54,16 @@ $routes->group('', ['filter' => 'authguard'], function ($routes) {
     $routes->get('finance/payment', 'Home::payment_report');
     $routes->get('payment/export_pdf', 'Home::export_pdf');
     $routes->get('finance/expenses', 'Home::exp_tpes');
-        $routes->get('expense_type/fetch_expense_types', 'Home::fetch_expense_types');
-            $routes->post('expense_type/save_expense_type', 'Home::save_expense_type');
+    $routes->get('expense_type/fetch_expense_types', 'Home::fetch_expense_types');
+    $routes->post('expense_type/save_expense_type', 'Home::save_expense_type');
+    $routes->get('finance', 'Home::fetch_expense_types');
+    $routes->get('fetch_expense_payments', 'Home::fetch_expense_payments');
+    $routes->post('save_expense_payment', 'Home::save_expense_payment');
+    $routes->get('fetch_all_transactions', 'Home::fetch_all_transactions');
+
+
+
+
 
 
 

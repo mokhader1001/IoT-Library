@@ -15,9 +15,18 @@ class Home extends BaseController
         return view('lib_staf');
     }
 
-    public function exp_tpes(): string
+   public function exp_tpes(): string
+{
+    $model = new \App\Models\HomeModel();
+    $data['accounts'] = $model->getAccounts();
+    $data['expense_types'] = $model->getExpenseTypesDropdown(); // For expense type dropdown
+
+    return view('expense/expense_types', $data);
+}
+
+      public function expense_payments(): string
     {
-        return view('expense/expense_types');
+        return view('expense/expense_payments');
     }
 
 public function payment_report()
@@ -27,6 +36,14 @@ public function payment_report()
 
     return view('payments.php', $data); // Ensure this view file exists
 }
+public function fetch_all_transactions()
+{
+    $model = new \App\Models\HomeModel();
+    $transactions = $model->getAllTransactions(); // Custom method to group by transaction_id
+
+    return view('transaction_journal', ['transactions' => $transactions]);
+}
+
 
 
 
@@ -1610,6 +1627,98 @@ public function save_expense_type()
 
 
 
+
+// ...existing code...
+public function fetch_expense_payments()
+{
+    $model = new HomeModel();
+    $data = $model->getExpensePayments();
+
+    $result = [];
+    $count = 1;
+    foreach ($data as $row) {
+        $result[] = [
+            $count++,
+            $row['expense_name'],
+            $row['price'],
+            $row['account_name'],
+            $row['descriptions'],
+            $row['payment_date'],
+            '<div class="btn-group">
+                <button class="btn btn-sm btn-info btn-edit-payment"
+                    data-id="' . $row['exppayment_id'] . '"
+                    data-expense-id="' . $row['expense_id'] . '"
+                    data-price="' . $row['price'] . '"
+                    data-account-id="' . $row['account_id'] . '"
+                    data-description="' . htmlspecialchars($row['descriptions']) . '"
+                    data-payment_date="' . $row['payment_date'] . '">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn-delete-payment" data-id="' . $row['exppayment_id'] . '">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>'
+        ];
+    }
+
+    return $this->response->setJSON(['data' => $result]);
+}
+// ...existing code...
+
+   public function save_expense_payment()
+{
+    $model = new HomeModel();
+    $request = $this->request->getPost();
+    $session = session();
+
+    $id = $request['exppayment_id'] ?? null;
+    $expense_name = $request['expense_name'];
+    $account_name = $request['account_name'];
+
+    $data = [
+        'expense_id' => $request['expense_id'],
+        'price' => $request['price'],
+        'account_id' => $request['account_id'],
+        'descriptions' => $request['description'],
+        'payment_date' => $request['payment_date']
+    ];
+
+    $action = $request['action_type'] ?? '';
+
+    // Prepare transaction row
+    $transaction = [
+        'account_id'     => $request['account_id'],
+        'debit'          => $request['price'],
+        'credit'         => $request['price'],
+        'debit_by'       => $expense_name,
+        'credit_by'      => $account_name,
+        'transaction_date' => $request['payment_date'],
+        'source' => "Expense Payments",
+
+        'descriptions'   => "done by " . $session->get('username')
+    ];
+
+    if ($action === 'insert') {
+        // Insert transaction and get ID
+        $transaction_id = $model->store_id('transactions', $transaction);
+
+        // Add transaction_id to payment data
+        $data['transaction_id'] = $transaction_id;
+
+        // Save expense payment
+        $model->store('expense_payments', $data);
+
+        return $this->response->setJSON(['success' => true, 'message' => 'Expense payment added successfully']);
+    } elseif ($action === 'update' && $id) {
+        $model->updateData('expense_payments', ['exppayment_id' => $id], $data);
+        return $this->response->setJSON(['success' => true, 'message' => 'Expense payment updated successfully']);
+    } elseif ($action === 'delete' && $id) {
+        $model->deleteData('expense_payments', ['exppayment_id' => $id]);
+        return $this->response->setJSON(['success' => true, 'message' => 'Expense payment deleted successfully']);
+    }
+
+    return $this->response->setJSON(['success' => false, 'message' => 'Invalid action']);
+}
 
 
 

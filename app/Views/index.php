@@ -4,7 +4,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 	<title>Kaiadmin - Bootstrap 5 Admin Dashboard</title>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-	<link rel="icon" href="<?php echo base_url(); ?>public/assets/img/kaiadmin/favicon.ico" type="image/x-icon"/>
+	<link rel="icon" href="<?php echo base_url(); ?>public/uploads/favicon.png" type="image/x-icon"/>
 
 	<!-- Fonts and icons -->
 	<script src="<?php echo base_url(); ?>public/assets/js/plugin/webfont/webfont.min.js"></script>
@@ -34,8 +34,13 @@
 				<!-- Logo Header -->
 				<div class="logo-header" data-background-color="dark">
 
-					<a href="<?php echo base_url(); ?>public/index.html" class="logo">
-						<img src="<?php echo base_url(); ?>public/assets/img/kaiadmin/logo_light.svg" alt="navbar brand" class="navbar-brand" height="20">
+					<a href="<?php echo base_url(); ?>/body" class="logo">
+<img src="<?php echo base_url(); ?>public/uploads/logo.png" 
+     alt="navbar brand" 
+     class="navbar-brand" 
+     height="70" 
+     width="auto" 
+     style="object-fit: contain;">
 					</a>
 					<div class="nav-toggle">
 						<button class="btn btn-toggle toggle-sidebar">
@@ -202,7 +207,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="<?= base_url('finance/transactions') ?>" class="nav-link">
+                <a href="<?= base_url('fetch_all_transactions') ?>" class="nav-link">
                     <i class="fas fa-exchange-alt"></i> Transactions
                 </a>
             </li>
@@ -669,7 +674,7 @@
 	<script src="<?php echo base_url(); ?>public/assets/js/plugin/datatables/datatables.min.js"></script>
 
 	<!-- Bootstrap Notify -->
-	<script src="<?php echo base_url(); ?>public/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script>
+	<!-- <script src="<?php echo base_url(); ?>public/assets/js/plugin/bootstrap-notify/bootstrap-notify.min.js"></script> -->
 
 	<!-- jQuery Vector Maps -->
 	<script src="<?php echo base_url(); ?>public/assets/js/plugin/jsvectormap/jsvectormap.min.js"></script>
