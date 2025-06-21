@@ -93,7 +93,10 @@
                     </div>
                     <div class="mb-2">
                         <label>Role</label>
-                        <input type="text" name="role" class="form-control">
+                        <select name="role" class="form-select">
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                        </select>
                     </div>
                     <div class="mb-2">
                         <label>Image</label><br>

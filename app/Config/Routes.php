@@ -50,7 +50,6 @@ $routes->group('', ['filter' => 'authguard'], function ($routes) {
 
     $routes->get('charges/fetch_damage_charges', 'Home::fetch_damage_charges');
     $routes->post('charges/delete_damage_charge', 'Home::delete_damage_charge');
-    $routes->post('makepayment', 'Home::makepayment');
     $routes->get('finance/payment', 'Home::payment_report');
     $routes->get('payment/export_pdf', 'Home::export_pdf');
     $routes->get('finance/expenses', 'Home::exp_tpes');
@@ -60,6 +59,8 @@ $routes->group('', ['filter' => 'authguard'], function ($routes) {
     $routes->get('fetch_expense_payments', 'Home::fetch_expense_payments');
     $routes->post('save_expense_payment', 'Home::save_expense_payment');
     $routes->get('fetch_all_transactions', 'Home::fetch_all_transactions');
+    $routes->get('Report/unreturned_books_report', 'Home::unreturned_books_report');
+
 
 
 
@@ -107,6 +108,7 @@ $routes->get('borrow', 'Home::showAvailableBooks');
 $routes->post('borrow/save', 'Home::saveBorrow');
 
 $routes->post('library-policy/save', 'Home::save');
+$routes->post('makepayment', 'Home::makepayment');
 
 
 $routes->get('fetch_borrow_book', 'Home::fetch_borrow_booka');

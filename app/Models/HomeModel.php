@@ -56,46 +56,70 @@ public function get_payment_report()
     return $this->db->query($sql)->getResultArray(); // ✅ works without .table()
 }
 
+public function getAllTransactionsFlat()
+{
+    $sql = "SELECT 
+                transaction_id,
+                accounts.account_name,
+                debit,
+                credit,
+                debit_by,
+                credit_by,
+                transaction_date,
+                descriptions,
+                source
+            FROM accounts, transactions 
+            WHERE accounts.account_id = transactions.account_id";
 
+    return $this->db->query($sql)->getResultArray();
+}
 
 public function getAllTransactions()
 {
-    // Step 1: Get all distinct transaction headers (grouped by transaction_id)
-    $builder = $this->db->table('transactions');
-    $builder->select('transaction_id, source, descriptions, transaction_date');
-    $builder->groupBy('transaction_id');
-    $headers = $builder->get()->getResultArray();
+    $db = \Config\Database::connect();
+    $builder = $db->query("
+        SELECT 
+            t.transaction_id,
+            t.source,
+            t.debit_by,
+            t.credit_by,
+            t.transaction_date,
+            t.descriptions,
+            a.account_name,
+            t.debit,
+            t.credit
+        FROM transactions t
+        JOIN accounts a ON t.account_id = a.account_id
+        ORDER BY t.transaction_id DESC
+    ");
+    return $builder->getResultArray();
+}
+public function getUnreturnedBooks()
+{
+    $db = \Config\Database::connect();
+    $builder = $db->query("
+        SELECT 
+            u.card_tag,
+            b.title,
+            a.Name AS author_name,
+            br.borrow_date,
+            br.return_date,
+            DATEDIFF(CURDATE(), br.return_date) AS overdue_days,
+            CASE 
+                WHEN CURDATE() > br.return_date THEN CONCAT('Overdue by ', DATEDIFF(CURDATE(), br.return_date), ' days')
+                ELSE 'No due'
+            END AS status
+        FROM 
+            borrow br
+        JOIN tbl_library_users u ON u.card_tag = br.lib_user_id
+        JOIN tbl_books b ON b.book_id = br.book_id
+        JOIN authors a ON  a.author_id = b.author_id
+        LEFT JOIN returend_books r ON r.boorow_id = br.b_id
+        WHERE 
+            r.boorow_id IS NULL
+    ");
 
-    $final = [];
-
-    foreach ($headers as $header) {
-        $transaction_id = $header['transaction_id'];
-
-        // Step 2: Get all entries for this transaction_id (debit and credit rows)
-        $entriesBuilder = $this->db->table('transactions t');
-        $entriesBuilder->select('a.account_name, t.debit, t.credit');
-        $entriesBuilder->join('accounts a', 'a.account_id = t.account_id');
-        $entriesBuilder->where('t.transaction_id', $transaction_id);
-        $entries = $entriesBuilder->get()->getResultArray();
-
-        // Step 3: Sum total debit (used in parent table only)
-        $total_debit = 0;
-        foreach ($entries as $e) {
-            $total_debit += (float)$e['debit'];
-        }
-
-        // Step 4: Prepare final structure
-        $final[] = [
-            'transaction_id' => $transaction_id,
-            'source'         => $header['source'],
-            'description'    => $header['descriptions'],
-            'transaction_date' => $header['transaction_date'],
-            'total_debit'    => $total_debit,
-            'entries'        => $entries
-        ];
-    }
-
-    return $final;
+    return $builder->getResultArray();
 }
 
 
@@ -394,6 +418,15 @@ public function countBooks()
     return $result ? $result->total : 0;
 }
 
+public function count_transactions()
+{
+    $db = \Config\Database::connect();
+    $query = $db->query("SELECT COUNT(transaction_id) AS total FROM transactions");
+    $result = $query->getRow();
+
+    return $result ? $result->total : 0;
+}
+
 public function countLibraryUsers()
 {
     $db = \Config\Database::connect();
@@ -421,6 +454,11 @@ public function getLastRegisteredUsers()
     ")->getResult();
 }
 
+public function get_column_value($table, $column, $where)
+{
+    $row = $this->db->table($table)->select($column)->where($where)->get()->getRow();
+    return $row ? $row->$column : null;
+}
 
 public function get_unpaid_charges_by_user($user_id)
 {

@@ -19,7 +19,7 @@
                 <span class="gradient-text">Library Dashboard</span>
                 <div class="underline"></div>
             </h2>
-            <button class="btn-refresh">
+            <button class="btn-refresh" onclick="window.location.reload();">
                 <i class="fas fa-sync-alt"></i>
                 <span>Refresh</span>
             </button>
@@ -82,17 +82,17 @@
             </div>
         </div>
 
-        <!-- Orders Card -->
+        <!-- Transactions Card -->
         <div class="stat-card orders-card">
             <div class="card-glass">
                 <div class="icon-container">
                     <div class="icon-wrapper orders-icon">
-                        <i class="far fa-check-circle"></i>
+                        <i class="fas fa-exchange-alt"></i>
                     </div>
                 </div>
                 <div class="stat-content">
-                    <h3 class="stat-value counter" data-target="576">0</h3>
-                    <p class="stat-label">Orders</p>
+                    <h3 class="stat-value counter" data-target="<?= esc($count_transactions) ?>">0</h3>
+                    <p class="stat-label">Total Transactions</p>
                     <div class="progress-container">
                         <div class="progress-bar orders-progress" style="width: 50%"></div>
                     </div>

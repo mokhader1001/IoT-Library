@@ -253,6 +253,7 @@ let paymentTable = $('#paymentTable').DataTable({
                     $('#expenseModal').modal('hide');
                     $('#expenseForm')[0].reset();
                     manageTable.ajax.reload(null, false);
+                    window.location.reload(); // Reload the page to refresh the dropdown
                 } else {
                     Swal.fire('Error!', res.message, 'error');
                 }
@@ -281,6 +282,8 @@ let paymentTable = $('#paymentTable').DataTable({
                 if (res.success) {
                     Swal.fire('Success!', res.message, 'success');
                     $('#paymentModal').modal('hide');
+                    $('.modal-backdrop').remove();
+
                     $('#paymentForm')[0].reset();
                     paymentTable.ajax.reload(null, false);
                 } else {

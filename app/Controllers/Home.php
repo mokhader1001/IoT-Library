@@ -39,12 +39,18 @@ public function payment_report()
 public function fetch_all_transactions()
 {
     $model = new \App\Models\HomeModel();
-    $transactions = $model->getAllTransactions(); // Custom method to group by transaction_id
+    $data['transactions'] = $model->getAllTransactions();
 
-    return view('transaction_journal', ['transactions' => $transactions]);
+    return view('transaction_journal',  $data);
 }
 
 
+public function unreturned_books_report()
+{
+    $model = new \App\Models\HomeModel();
+    $data['records'] = $model->getUnreturnedBooks();
+    return view('reports/unreturned_books', $data);
+}
 
 
     public function Rules_for_Users(): string
@@ -98,7 +104,6 @@ public function export_pdf()
     $dompdf->stream('Library_Payment_Report.pdf', ['Attachment' => false]);
 }
 
-// In PaymentController.php
 public function makepayment()
 {
     $request = $this->request->getJSON(true); // Get JSON body
@@ -180,6 +185,8 @@ public function profile(): string
         'total_books'   => $model->countBooks(),
         'total_users'   => $model->countLibraryUsers(),
         'total_authors' => $model->countAuthors(),
+        'count_transactions' => $model->count_transactions(),
+
     ];
 
     return view('body', $data);
