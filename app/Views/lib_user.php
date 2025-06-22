@@ -116,7 +116,30 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    const baseUrl = "<?= base_url(); ?>";
+  const baseUrl = "<?= base_url(); ?>";
+let lastUID = '';       // Track last scanned UID
+let isProcessing = false; // Prevent multiple triggers
+
+// Fetch UID or REFID from backend and fill into #cardInput
+function fetchCardUID() {
+  if (isProcessing) return;
+
+  $.getJSON(base_url + 'get_uid', function(data) {
+    const fetchedUID = data.uid || data.refid;
+
+    if (fetchedUID && fetchedUID !== lastUID) {
+      lastUID = fetchedUID;
+      $('#card_tag').val(fetchedUID);
+    }
+  });
+}
+
+// Optional: Reset if you want to allow re-scanning after some time
+function resetScanner() {
+  lastUID = '';
+  isProcessing = false;
+  $('#cardInput').val('Waiting for scan...');
+}
 
     let align = 'dt-left';
     let manageTable;

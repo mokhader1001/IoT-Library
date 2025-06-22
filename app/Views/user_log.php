@@ -13,7 +13,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', sans-serif;
     }
 
     .login-box {
@@ -74,20 +73,18 @@
   <div class="header-text">
     <h4><i class="fas fa-id-card text-primary me-1"></i> Library Card Access</h4>
     <p class="text-muted">Place your library card on the scanner to continue.</p>
-    </div>
+  </div>
 
-    <form id="cardLoginForm">
-  <input 
-    type="text" 
-    id="cardInput" 
-    name="card_number" 
-    class="form-control text-center" 
-    placeholder="Please scan your library card to proceed" 
-    autofocus 
-  />
-</form>
-
-
+  <form id="cardLoginForm">
+    <input 
+      type="text" 
+      class="form-control mb-3" 
+      id="cardInput" 
+      name="cardInput"
+      readonly 
+      value="Waiting for scan..."
+    />
+  </form>
 
   <div class="info-box">
     <p><strong>Dhobaale Library</strong> provides equitable access to resources for students. Use your card for borrowing, digital archives, and study rooms. Respect library rules and enjoy your academic journey.</p>
@@ -99,12 +96,28 @@
 
 <script>
 const base_url = "<?= base_url() ?>";
+let lastUID = '';       // Track last scanned UID
+let isProcessing = false; // Prevent multiple triggers
 
+// Function to fetch UID from backend
+function fetchCardUID() {
+  if (isProcessing) return; // Skip if still processing
+
+  $.getJSON(base_url + 'get_uid', function(data) {
+    if (data && data.uid && data.uid !== lastUID) {
+      lastUID = data.uid;
+      $('#cardInput').val(data.uid).trigger('input');
+    }
+  });
+}
+
+// Trigger when new UID is written to input
 $('#cardInput').on('input', function () {
   const card_number = $(this).val().trim();
 
-  if (card_number.length > 0) {
-    
+  if (card_number.length > 0 && !isProcessing) {
+    isProcessing = true; // Start processing
+
     $.ajax({
       url: base_url + 'checkCardId',
       type: 'POST',
@@ -112,13 +125,13 @@ $('#cardInput').on('input', function () {
       dataType: 'json',
       success: function (res) {
         if (res.success) {
-          // Send verification code to user's email
+          // If card is valid
           $.post(base_url + 'sendVerificationCode', { email: res.email }, function(sendRes) {
             if (sendRes.success) {
               Swal.fire({
                 icon: 'success',
                 title: 'Code Sent',
-                text: 'Verification code sent to ' + res.email,
+                text: 'Verification code is sent',
                 timer: 2000,
                 showConfirmButton: false
               }).then(() => {
@@ -126,28 +139,41 @@ $('#cardInput').on('input', function () {
               });
             } else {
               Swal.fire('Error', sendRes.message || 'Failed to send verification code.', 'error');
+              resetScanner();
             }
           }, 'json');
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Invalid Card',
-            text: res.message || 'This card is not registered.',
-            showConfirmButton: false,
-            timer: 2000
-          });
-          $('#cardInput').val('').focus();
+          // Card is invalid
+          setTimeout(() => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Invalid Card',
+              text: res.message || 'This card is not registered.',
+              showConfirmButton: false,
+              timer: 2000
+            });
+            resetScanner();
+          }, 3000); // wait 3 seconds before showing the message
         }
       },
       error: function () {
         Swal.fire('Error', 'Server error. Please try again.', 'error');
+        resetScanner();
       }
     });
   }
 });
+
+// Reset scanner input
+function resetScanner() {
+  lastUID = '';
+  isProcessing = false;
+  $('#cardInput').val('Waiting for scan...');
+}
+
+// Start polling every 3 seconds
+setInterval(fetchCardUID, 3000);
 </script>
-
-
 
 </body>
 </html>

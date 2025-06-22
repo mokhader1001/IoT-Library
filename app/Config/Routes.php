@@ -6,6 +6,9 @@ use CodeIgniter\Router\RouteCollection;
  * @var RouteCollection $routes
  */
 $routes->get('/', 'Home::user_log');
+$routes->post('recive', 'Home::receive_uid');  // POST route to receive and save UID
+$routes->get('get_uid', 'Home::get_uid'); // allow with trailing slash
+
 
 // Public routes (no login required)
 $routes->get('Admin', 'Auth::index');

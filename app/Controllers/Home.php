@@ -167,8 +167,63 @@ public function makepayment()
 
 public function user_log(): string
 {
-    return view('user_log');
+     
+
+        // Display UID in HTML
+        return view('user_log');
 }
+
+public function receive_uid()
+{
+    $uid = $this->request->getPost('UIDresult');
+
+    if (!$uid) {
+        return $this->response->setJSON([
+            'status' => 400,
+            'error' => 'UIDresult not found.'
+        ])->setStatusCode(400);
+    }
+
+    $file = WRITEPATH . 'uid.txt';
+    $write = file_put_contents($file, $uid);
+    if ($write === false) {
+        return $this->response->setJSON([
+            'status' => 500,
+            'error' => 'Failed to write UID to file.'
+        ])->setStatusCode(500);
+    }
+
+    return $this->response->setJSON([
+        'status' => 200,
+        'message' => 'UID saved successfully',
+        'uid' => $uid
+    ]);
+}
+
+// This handles GET requests to read the UID file and return UID
+public function get_uid()
+{
+    $file = WRITEPATH . 'uid.txt';
+    if (file_exists($file)) {
+        $uid = file_get_contents($file);
+        if ($uid) {
+            // Clear the file after reading so UID is only fetched once
+            file_put_contents($file, '');
+            return $this->response->setJSON([
+                'status' => 200,
+                'uid' => $uid
+            ]);
+        }
+    }
+
+    return $this->response->setJSON([
+        'status' => 404,
+        'error' => 'UID not available'
+    ]);
+}
+
+
+
 
 public function profile(): string
 {

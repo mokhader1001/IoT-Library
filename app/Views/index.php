@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<title>Kaiadmin - Bootstrap 5 Admin Dashboard</title>
+	<title>SmartLibrary</title>
 	<meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
 	<link rel="icon" href="<?php echo base_url(); ?>public/uploads/favicon.png" type="image/x-icon"/>
 
@@ -11,7 +11,15 @@
 	<script>
 		WebFont.load({
 			google: {"families":["Public Sans:300,400,500,600,700"]},
-			custom: {"families":["Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['http://localhost/lib/public/assets/css/fonts.min.css']},
+custom: {
+  families: [
+    "Font Awesome 5 Solid",
+    "Font Awesome 5 Regular",
+    "Font Awesome 5 Brands",
+    "simple-line-icons"
+  ],
+  urls: ["<?= base_url('/public/assets/css/fonts.min.css') ?>"]
+},
 			active: function() {
 				sessionStorage.fonts = true;
 			}
