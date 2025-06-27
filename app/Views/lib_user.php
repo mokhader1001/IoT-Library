@@ -85,7 +85,7 @@
           </div>
           <div class="mb-3">
             <label class="form-label">Card Tag</label>
-            <input type="text" name="card_tag" class="form-control" placeholder="Please scan the card using the RFID machine">
+            <input type="text" name="card_tag" id="card_tag" class="form-control" placeholder="Please scan the card using the RFID machine">
             </div>
           <!-- Image Preview Modal Block -->
       <div class="mb-3">
@@ -120,11 +120,11 @@
 let lastUID = '';       // Track last scanned UID
 let isProcessing = false; // Prevent multiple triggers
 
-// Fetch UID or REFID from backend and fill into #cardInput
+// Fetch UID or REFID from backend and fill into #card_tag
 function fetchCardUID() {
   if (isProcessing) return;
 
-  $.getJSON(base_url + 'get_uid', function(data) {
+  $.getJSON(baseUrl + 'get_uid', function(data) {
     const fetchedUID = data.uid || data.refid;
 
     if (fetchedUID && fetchedUID !== lastUID) {
@@ -134,11 +134,14 @@ function fetchCardUID() {
   });
 }
 
+// Call fetchCardUID every 2 seconds to poll for new UID
+setInterval(fetchCardUID, 2000);
+
 // Optional: Reset if you want to allow re-scanning after some time
 function resetScanner() {
   lastUID = '';
   isProcessing = false;
-  $('#cardInput').val('Waiting for scan...');
+  $('#card_tag').val('Waiting for scan...');
 }
 
     let align = 'dt-left';

@@ -113,24 +113,54 @@ public function makepayment()
     }
 
     $charges = $request['charges']; // array of { charge_id, amount, title, status }
-    $paymentMethod = $request['payment_method'];
+    $paymentMethod = strtolower($request['payment_method']);
     $userId = session()->get('user_id'); // Assumes user_id is stored in session
     $paymentDate = date('Y-m-d H:i:s');
 
-    $paymentModel = new \App\Models\HomeModel();
+    // Map payment method to account_id and account_name
+    $accountMap = [
+        'salambank' => ['id' => 1, 'name' => 'Salam Bank'],
+        'waafi'      => ['id' => 2, 'name' => 'waafi'],
+        'premier'   => ['id' => 4, 'name' => 'Premier'],
+        'paypal'    => ['id' => 5, 'name' => 'Paypal'],
+    ];
+    $account_id = $accountMap[$paymentMethod]['id'] ?? null;
+    $account_name = $accountMap[$paymentMethod]['name'] ?? ucfirst($paymentMethod);
 
+    if (!$account_id) {
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid payment method.']);
+    }
+
+    $paymentModel = new \App\Models\HomeModel();
     $success = true;
+
     foreach ($charges as $charge) {
+        // Insert transaction first
+        $transactionData = [
+            'account_id'        => $account_id,
+            'debit'             => $charge['amount'],
+            'credit'            => $charge['amount'],
+            'debit_by'          => $account_name,
+            'credit_by'         => 'Books Charges',
+            'transaction_date'  => $paymentDate,
+            'descriptions'      => 'Payment for charge: ' . ($charge['title'] ?? ''),
+            'source'            => 'Book Charges',
+            'created_at'        => $paymentDate,
+        ];
+        $transaction_id = $paymentModel->store_id('transactions', $transactionData);
+
+        // Insert payment with transaction_id
         $data = [
-            'user_id' => $userId,
-            'charge_id' => $charge['charge_id'],
-            'price' => $charge['amount'],
+            'user_id'        => $userId,
+            'charge_id'      => $charge['charge_id'],
+            'price'          => $charge['amount'],
             'payment_method' => $paymentMethod,
-            'payment_date' => $paymentDate,
-            'status'=>'paid'
+            'payment_date'   => $paymentDate,
+            'status'         => 'paid',
+            'transaction_id' => $transaction_id,
         ];
 
-        if (!$paymentModel->store("payment",$data)) {
+        if (!$paymentModel->store("payment", $data)) {
             $success = false;
         }
     }
@@ -141,9 +171,6 @@ public function makepayment()
         return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to save some records.']);
     }
 }
-
-
-    
     public function dhash(): string
     {
         return view('User_dhash');
