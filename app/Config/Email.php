@@ -7,7 +7,7 @@ use CodeIgniter\Config\BaseConfig;
 class Email extends BaseConfig
 {
     public string $fromEmail  = 'mohamedyuusuf851@gmail.com';
-    public string $fromName   = 'Library Admin';
+    public string $fromName   = 'SmartLib';
     public string $recipients = '';
 
     /**
@@ -38,7 +38,7 @@ class Email extends BaseConfig
     /**
      * SMTP Password
      */
-    public string $SMTPPass = 'fnux terv ftch ezjh'; // Gmail App Password (NO SPACES)
+    public string $SMTPPass = 'lamd cokn gsjr vfef'; // Gmail App Password (NO SPACES)
 
     /**
      * SMTP Port

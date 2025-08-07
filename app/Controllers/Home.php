@@ -1238,6 +1238,11 @@ public function checkCardId()
             return $this->response->setJSON(['success' => false, 'message' => 'User not found. Please scan a valid card.']);
         }
     }
+public function logout()
+{
+    session()->destroy(); // ✅ Destroy all session data
+    return redirect()->to(base_url()); // ✅ Redirect to base URL (e.g., homepage)
+}
 
 
     public function showUnreturnedBooks()

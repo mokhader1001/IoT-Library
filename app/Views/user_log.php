@@ -81,8 +81,8 @@
       class="form-control mb-3" 
       id="cardInput" 
       name="cardInput"
-      readonly 
-      value="Waiting for scan..."
+    
+     
     />
   </form>
 

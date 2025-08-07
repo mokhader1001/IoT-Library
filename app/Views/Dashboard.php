@@ -461,7 +461,11 @@ $avatar = $image ? base_url("public/uploads/library_users/" . $image) : "https:/
                         <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        <li>
+                          <a class="dropdown-item" href="<?= base_url('logout') ?>">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                          </a>
+                        </li>
                     </ul>
                 </li>
             </ul>
@@ -853,8 +857,8 @@ $avatar = $image ? base_url("public/uploads/library_users/" . $image) : "https:/
 
 <!-- JavaScript Logic -->
 
-  
-    <!-- Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
 <script>
@@ -1090,24 +1094,35 @@ function handlePayClick() {
     form_data: formData
   };
 
-  fetch("<?= base_url('makepayment') ?>", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(response => {
-    console.log(response);
-    alert("Payment submitted successfully!");
-    // optionally reset or redirect
-  })
-  .catch(error => {
-    console.error(error);
-    alert("An error occurred while submitting payment.");
-    resetPayButton(btn); // Re-enable on error
+ fetch("<?= base_url('makepayment') ?>", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+})
+.then(res => res.json())
+.then(response => {
+  console.log(response);
+  Swal.fire({
+    title: "✅ Payment Submitted",
+    text: "Your payment was submitted successfully!",
+    icon: "success",
+    confirmButtonText: "OK"
+  }).then(() => {
+    location.reload(); // ✅ Reload the page after user clicks OK
   });
+})
+.catch(error => {
+  console.error(error);
+  Swal.fire({
+    title: "⚠️ Error",
+    text: "An error occurred while submitting payment.",
+    icon: "error"
+  });
+  resetPayButton(btn); // ✅ Re-enable button on error
+});
+
 }
 
 // Reset the button (used on error or validation fail)

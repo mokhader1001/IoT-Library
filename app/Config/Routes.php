@@ -95,36 +95,29 @@ $routes->group('', ['filter' => 'authguard'], function ($routes) {
 
 
 });
+// ✅ Public routes (NO filter)
 $routes->get('user/verfications', 'Home::verfications');
-
 $routes->post('checkCardId', 'Home::checkCardId');
-
-$routes->post('sendVerificationCode', 'Home::sendVerificationCode'); 
-
-
-$routes->get('dhash', 'Home::dhash');
-
+$routes->post('sendVerificationCode', 'Home::sendVerificationCode');
 $routes->post('verifyCode', 'Home::verifyCode');
 
-$routes->get('borrow', 'Home::showAvailableBooks');
+// ✅ Protected routes (require session)
+$routes->group('', ['filter' => 'cardlogin'], function ($routes) {
+    $routes->get('dhash', 'Home::dhash');
+    $routes->get('borrow', 'Home::showAvailableBooks');
+    $routes->post('borrow/save', 'Home::saveBorrow');
+    $routes->post('library-policy/save', 'Home::save');
+    $routes->post('makepayment', 'Home::makepayment');
+    $routes->get('fetch_borrow_book', 'Home::fetch_borrow_booka');
+    $routes->get('return', 'Home::return');
+    $routes->post('returnbooks', 'Home::returnbooks');
+    $routes->get('Dash', 'Home::Dash');
+    $routes->get('Rules_for_Users', 'Home::Rules_for_Users');
+    $routes->get('showUnreturnedBooks', 'Home::showUnreturnedBooks');
+    $routes->get('logout', 'Home::logout');
 
-$routes->post('borrow/save', 'Home::saveBorrow');
+});
 
-$routes->post('library-policy/save', 'Home::save');
-$routes->post('makepayment', 'Home::makepayment');
-
-
-$routes->get('fetch_borrow_book', 'Home::fetch_borrow_booka');
-
-$routes->get('return', 'Home::return');
-
-
-$routes->post('returnbooks', 'Home::returnbooks');
-
-$routes->get('Dash', 'Home::Dash');
-$routes->get('Rules_for_Users', 'Home::Rules_for_Users');
-
-$routes->get('showUnreturnedBooks', 'Home::showUnreturnedBooks');
 
 
 

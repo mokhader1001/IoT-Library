@@ -311,26 +311,29 @@ public function deleteChargeById($charge_id)
      public function getDamageCharges()
 {
     $sql = "
-        SELECT 
-            charge.charge_id,
-            tbl_books.title,
-            authors.Name,
-            tbl_library_users.username,
-            tbl_library_users.card_tag,
-            charge.charge_type,
-            charge.price,
-            charge.desriptions,
-            charge.charge_date,
-            charge.photo
-        FROM 
-            charge
-        JOIN tbl_books ON tbl_books.book_id = charge.book_id
-        JOIN authors ON authors.author_id = tbl_books.author_id
-        JOIN tbl_library_users ON tbl_library_users.card_tag = charge.user_id
-        WHERE 
-            charge.charge_type = 'Damage'
-        ORDER BY 
-            charge.charge_id DESC
+       SELECT 
+    charge.charge_id,
+    tbl_books.title,
+    authors.Name,
+    tbl_library_users.username,
+    tbl_library_users.card_tag,
+    charge.charge_type,
+    charge.price,
+    charge.desriptions,
+    charge.charge_date,
+    charge.photo
+FROM 
+    charge
+JOIN tbl_books ON tbl_books.book_id = charge.book_id
+JOIN authors ON authors.author_id = tbl_books.author_id
+JOIN tbl_library_users ON tbl_library_users.card_tag = charge.user_id
+WHERE 
+    charge.charge_type = 'Damage'
+GROUP BY 
+    charge.charge_id
+ORDER BY 
+    charge.charge_id DESC
+
     ";
 
     return $this->db->query($sql)->getResult();
@@ -384,26 +387,28 @@ public function get_last_5_returned_books_with_optional_charges($user_id)
 public function get_damaged_books_pending_charge()
 {
     $sql = "
-        SELECT 
-            tbl_books.book_id,
-            tbl_books.title,
-            authors.Name AS author,
-            borrow.b_id as borrow_id,
+       SELECT 
+    tbl_books.book_id,
+    tbl_books.title,
+    authors.Name AS author,
+    borrow.b_id as borrow_id,
+    tbl_books.price,
+    tbl_books.photo,
+    tbl_library_users.username,
+    tbl_library_users.card_tag,
+    returend_books.status
+FROM borrow
+INNER JOIN tbl_books ON tbl_books.book_id = borrow.book_id
+INNER JOIN authors ON authors.author_id = tbl_books.author_id
+INNER JOIN returend_books ON returend_books.boorow_id = borrow.b_id
+INNER JOIN tbl_library_users ON tbl_library_users.card_tag = borrow.lib_user_id
+WHERE returend_books.status = 'damaged'
+  AND borrow.b_id NOT IN (
+      SELECT boorow_id FROM charge WHERE charge_type = 'Damage'
+  )
+GROUP BY borrow.b_id
+ORDER BY borrow.b_id DESC
 
-            tbl_books.price,
-            tbl_books.photo,
-            tbl_library_users.username,
-            tbl_library_users.card_tag,
-            returend_books.status
-        FROM borrow
-        INNER JOIN tbl_books ON tbl_books.book_id = borrow.book_id
-        INNER JOIN authors ON authors.author_id = tbl_books.author_id
-        INNER JOIN returend_books ON returend_books.boorow_id = borrow.b_id
-        INNER JOIN tbl_library_users ON tbl_library_users.card_tag = borrow.lib_user_id
-        WHERE returend_books.status = 'damaged'
-        AND borrow.b_id NOT IN (
-            SELECT boorow_id FROM charge WHERE charge_type = 'Damage'
-        )
     ";
 
     return $this->db->query($sql)->getResultArray();

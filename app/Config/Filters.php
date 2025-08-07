@@ -34,7 +34,9 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'authguard'  => \App\Filters\AuthGuard::class, // ✅ added here
+        'authguard'  => \App\Filters\AuthGuard::class,
+        'cardlogin' => \App\Filters\CardIdFilter::class,
+
 
     ];
     
