@@ -1,63 +1,87 @@
-# CodeIgniter 4 Framework
+# Smart Library - Final Year Graduation Project
 
-## What is CodeIgniter?
+## 📚 Project Overview
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+**Smart Library** is an IoT-based library automation system designed to streamline the **borrowing and returning of books** using **RFID smart cards**. The system integrates **hardware components** and a **web application** to provide an efficient, secure, and user-friendly experience for both students and library staff.
 
-This repository holds the distributable version of the framework.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+The project is built using:
+- **RFID technology** for identifying books and users
+- **NodeMCU (ESP8266)** for IoT communication
+- **C++ (Arduino)** to control hardware logic
+- **CodeIgniter 4 (CI4)** PHP framework for the backend
+- **MySQL** database for storing user and book data
+- **JavaScript & jQuery** for frontend interactivity
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+---
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## 🔑 Key Features
 
-## Important Change with index.php
+- **Smart Borrowing & Returning**  
+  Users can borrow and return books using RFID smart cards linked to their accounts.
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+- **Automated Penalty System**  
+  Applies fines for **late returns**, **lost books**, or **damaged items**.
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+- **Real-Time Updates**  
+  The system syncs real-time data between the IoT device and web portal.
 
-**Please** read the user guide for a better explanation of how CI4 works!
+- **Admin Dashboard**  
+  Library staff can manage books, users, and track borrowing history.
 
-## Repository Management
+---
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## 🧰 Tech Stack
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+| Component       | Technology Used            |
+|----------------|-----------------------------|
+| Backend         | PHP (CodeIgniter 4 Framework) |
+| Frontend        | HTML, CSS, JavaScript, jQuery |
+| Database        | MySQL                      |
+| IoT Controller  | NodeMCU (ESP8266)          |
+| Programming     | C++ (Arduino)              |
+| RFID System     | RFID Reader + Smart Cards  |
 
-## Contributing
+---
 
-We welcome contributions from the community.
+## 📁 Folder Structure
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md) section in the development repository.
+> The **`index.php`** file has been moved to the `public/` folder for improved security.  
+> Ensure your server root is set to the `public/` folder.
 
-## Server Requirements
+---
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+## ⚙️ Requirements
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+- PHP 8.1 or higher
+- MySQL
+- Required PHP Extensions:
+  - intl
+  - mbstring
+  - json
+  - mysqlnd
+  - libcurl
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+---
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## 👨‍💻 Contributions
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
-# library_final_year
-# Smart_library_graduation_project
-# library_final_year_project
+This is a final year academic project. While contributions are not required, you are welcome to explore, learn, or build upon the idea.
+
+---
+
+## 📌 Notes
+
+- Built for educational purposes.
+- Inspired by the need to automate traditional library processes in institutions.
+- This project demonstrates real-world application of **IoT + Web Development** integration.
+
+---
+
+## 📎 Related Tags
+
+`#library_final_year`  
+`#Smart_library_graduation_project`  
+`#RFID_Library_System`  
+`#CI4_IoT_Project`  
+`#SmartLibrary`
+
